@@ -78,7 +78,7 @@ components:
       type: http
       scheme: basic
 paths:
-  /rejectOrder:
+  /buyer/rejectOrder:
     get:
       tags:
         - "Buyer - supplier"
@@ -115,7 +115,7 @@ paths:
           required: true
           schema:
             type: string
-  /orderResponse:
+  /buyer/orderResponse:
     get:
       tags:
         - "Buyer - supplier"
