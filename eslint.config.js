@@ -1,12 +1,12 @@
 // eslint.config.js
-// code taken from https://eslint.org/docs/latest/use/configure/configuration-files
-import { defineConfig } from "eslint/config";
-
-export default defineConfig([
-    {
-        rules: {
-            semi: "error",
-            "prefer-const": "error"
-        }
-    }
-]);
+module.exports = {
+	overrides: [
+	  {
+		files: ["*.js"], // Target only .js files
+		rules: {
+		  semi: "error",
+		  "prefer-const": "error"
+		}
+	  }
+	]
+  };
