@@ -83,7 +83,7 @@ paths:
       tags:
         - "Buyer - supplier"
       summary: Buyer receives a rejection notification from the seller.
-      description: Update status of order to "rejected".
+      description: Display rejection notification sent by seller on buyer's interface.
       operationId: rejectOrder
       responses:
         '200':
@@ -115,11 +115,11 @@ paths:
           required: true
           schema:
             type: string
-  /buyer/orderResponse:
+  /buyer/fetchOrderDetails:
     get:
       tags:
         - "Buyer - supplier"
-      summary: Display order details.
+      summary: Display buyer's order details.
       description: Display buyer's order details.
       operationId: orderResponse
       responses:
