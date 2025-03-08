@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: Order Creation
+  description: |-
+    API description for the order creation process in the Digital trade service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# servers:
+  # - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: "Buyer - supplier"
+    description: "Routes in the buyer - supplier interface"
+
+  - name: "Supplier - buyer"
+    description: "Routes in the supplier-buyer interface"
+
+components:
+  schemas:
+    rejectOrderBuyerToSeller:
+      type: object
+      properties:
+        rejectedStatus:
+          type: boolean
+          description: rejected status of buyer's order
+        orderRejectionReason:
+          type: string
+          description: reason for rejection
+
+    orderResponseBuyerToSeller:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: "Buyer's order id"
+        customerId:
+          type: string
+          description: "Buyer's personal id"
+        date:
+          type: object
+          description: "Date of creation/ cancellation/rejection/ update"
+        allowanceInstructions:
+          type: string
+          description: "Allowance/charge instructions(freight, documentation)"
+        totalCost:
+          type: number
+          description: "Total cost of buyer's order"
+        orders:
+          type: array
+          description: "List of buyer's orders"
+          items:
+            properties:
+              productName:
+                type: string
+              productCost:
+                type: string
+              totalNo:
+                type: number
+        deliveryAddress:
+          type: string
+          description: "Buyer's address"
+        deliveryMethod:
+          type: string
+          description: "Buyer's preferred delivery method"
+        discountOffers:
+          type: number
+          description: "Discount offers available"
+        orderConfirmation:
+          type: boolean
+          description: "Buyer's confirmation of order"
+          default: true
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+paths:
+  /rejectOrder:
+    get:
+      tags:
+        - "Buyer - supplier"
+      summary: Buyer receives a rejection notification from the seller.
+      description: Update status of order to "rejected".
+      operationId: rejectOrder
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rejectOrderBuyerToSeller'
+        '400':
+          description: Invalid order ID supplied
+
+      parameters:
+        - name: date
+          in: query
+          description: Date of rejection
+          required: true
+          schema:
+            type: object
+        - name: rejectionSignal
+          in: query
+          description: Rejection signal received from seller
+          required: true
+          schema:
+            type: boolean
+            default: false
+        - name: orderId
+          in: query
+          description: Order id used to reference buyer's order
+          required: true
+          schema:
+            type: string
+  /orderResponse:
+    get:
+      tags:
+        - "Buyer - supplier"
+      summary: Display order details.
+      description: Display buyer's order details.
+      operationId: orderResponse
+      responses:
+          '200':
+            description: Ok
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponseBuyerToSeller'
+          '503':
+            description: Service unavailable
+      parameters:
+        - name: orderType
+          in: query
+          description: Type of order - create/ change/cancel
+          schema:
+            type: "string"
+            enum: ["create", "change", "order"]
+            default: "create"
