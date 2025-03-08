@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: Order Creation
+  description: |-
+    API description for the order creation process in the Digital trade service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# servers:
+  # - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: "Buyer - supplier"
+    description: "Routes in the buyer - supplier interface"
+
+  - name: "Supplier - buyer"
+    description: "Routes in the supplier-buyer interface"
+components:
+  schemas:
+    rejectOrderBuyerToSeller:
+      type: object
+      properties:
+        rejectedStatus:
+          type: boolean
+          description: rejected status of buyer's order
+        orderRejectionReason:
+          type: string
+          description: reason for rejection
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+paths:
+  /rejectOrder:
+    get:
+      tags:
+        - "Buyer - supplier"
+      summary: Buyer receives a rejection notification from the seller.
+      description: Update status of order to "rejected".
+      operationId: rejectOrder
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rejectOrderBuyerToSeller'
+        '400':
+          description: Invalid order ID supplied
+      parameters:
+        - name: date
+          in: query
+          description: Date of rejection
+          required: true
+          schema:
+            type: string
+        - name: rejectionSignal
+          in: query
+          description: Rejection signal received from seller
+          required: true
+          schema:
+            type: string
+            default: false
+        - name: orderId
+          in: query
+          description: Order id used to reference buyer's order
+          required: true
+          schema:
+            type: string
