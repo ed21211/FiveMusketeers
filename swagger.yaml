@@ -13,11 +13,11 @@ externalDocs:
 # servers:
   # - url: https://petstore3.swagger.io/api/v3
 tags:
-  - name: "Buyer - supplier"
-    description: "Routes in the buyer - supplier interface"
+  - name: "Buyer - seller"
+    description: "Routes in the buyer - seller interface"
 
-  - name: "Supplier - buyer"
-    description: "Routes in the supplier-buyer interface"
+  - name: "Seller - buyer"
+    description: "Routes in the seller-buyer interface"
 
 components:
   schemas:
@@ -86,7 +86,7 @@ paths:
   /seller/rejectOrder{orderId}:
     post:
       tags:
-        - "Supplier - buyer"
+        - "Seller - buyer"
       summary: Seller rejects buyer's order.
       description: Send a notifaication to the buyer about the order's rejected status.
       operationId: rejectOrder
@@ -123,7 +123,7 @@ paths:
   /buyer/fetchOrderDetails/{orderId}/{customerId}/{discountOfferId}:
     get:
       tags:
-        - "Buyer - supplier"
+        - "Buyer - seller"
       summary: Display buyer's order details.
       description: Display buyer's order details.
       operationId: orderResponse
@@ -155,4 +155,3 @@ paths:
           description: "Disount offer id being used by buyer"
           schema:
             type: "string"
-        
