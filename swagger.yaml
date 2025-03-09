@@ -21,7 +21,7 @@ tags:
 
 components:
   schemas:
-    rejectOrderBuyerToSeller:
+    rejectOrderSellerToBuyer:
       type: object
       properties:
         rejectedStatus:
@@ -37,6 +37,11 @@ components:
         orderId:
           type: string
           description: "Buyer's order id"
+        orderType:
+          type: string
+          enum: ["create", "cancel", "update"]
+          default: "create"
+          description: "Type of order: create/ cancel/ update"
         customerId:
           type: string
           description: "Buyer's personal id"
@@ -58,7 +63,7 @@ components:
                 type: string
               productCost:
                 type: string
-              totalNo:
+              quantity:
                 type: number
         deliveryAddress:
           type: string
@@ -66,9 +71,9 @@ components:
         deliveryMethod:
           type: string
           description: "Buyer's preferred delivery method"
-        discountOffers:
-          type: number
-          description: "Discount offers available"
+        discountOfferId:
+          type: string
+          description: "Discount offer used by buyer"
         orderConfirmation:
           type: boolean
           description: "Buyer's confirmation of order"
@@ -78,22 +83,22 @@ components:
       type: http
       scheme: basic
 paths:
-  /buyer/rejectOrder:
-    get:
+  /seller/rejectOrder{orderId}:
+    post:
       tags:
-        - "Buyer - supplier"
-      summary: Buyer receives a rejection notification from the seller.
-      description: Display rejection notification sent by seller on buyer's interface.
+        - "Supplier - buyer"
+      summary: Seller rejects buyer's order.
+      description: Send a notifaication to the buyer about the order's rejected status.
       operationId: rejectOrder
       responses:
-        '200':
-          description: Ok
+        '201':
+          description: Created response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/rejectOrderBuyerToSeller'
+                $ref: '#/components/schemas/rejectOrderSellerToBuyer'
         '400':
-          description: Invalid order ID supplied
+          description: Bad request
 
       parameters:
         - name: date
@@ -102,20 +107,20 @@ paths:
           required: true
           schema:
             type: object
-        - name: rejectionSignal
+        - name: reason
           in: query
-          description: Rejection signal received from seller
+          description: "Reason for rejection"
           required: true
           schema:
-            type: boolean
-            default: false
+            type: string
         - name: orderId
-          in: query
+          in: path
           description: Order id used to reference buyer's order
           required: true
           schema:
             type: string
-  /buyer/fetchOrderDetails:
+        
+  /buyer/fetchOrderDetails/{orderId}/{customerId}/{discountOfferId}:
     get:
       tags:
         - "Buyer - supplier"
@@ -132,10 +137,22 @@ paths:
           '503':
             description: Service unavailable
       parameters:
-        - name: orderType
-          in: query
-          description: Type of order - create/ change/cancel
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
           schema:
             type: "string"
-            enum: ["create", "change", "order"]
-            default: "create"
+        - name: customerId
+          required: true
+          in: path
+          description: "Buyer's customer id"
+          schema:
+            type: "string"
+        - name: discountOfferId
+          required: true
+          in: path
+          description: "Disount offer id being used by buyer"
+          schema:
+            type: "string"
+        
