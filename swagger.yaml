@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Order Creation
+  description: |-
+    API description for the order creation process in the Digital trade service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# servers:
+  # - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: "Buyer - seller"
+    description: "Routes in the buyer - seller interface"
+
+  - name: "Seller - buyer"
+    description: "Routes in the seller-buyer interface"
+
+components:
+  schemas:
+    rejectOrderSellerToBuyer:
+      type: object
+      properties:
+        rejectedStatus:
+          type: boolean
+          description: rejected status of buyer's order
+        orderRejectionReason:
+          type: string
+          description: reason for rejection
+
+    orderResponseBuyerToSeller:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: "Buyer's order id"
+        orderType:
+          type: string
+          enum: ["create", "cancel", "update"]
+          default: "create"
+          description: "Type of order: create/ cancel/ update"
+        customerId:
+          type: string
+          description: "Buyer's personal id"
+        date:
+          type: object
+          description: "Date of creation/ cancellation/rejection/ update"
+        allowanceInstructions:
+          type: string
+          description: "Allowance/charge instructions(freight, documentation)"
+        totalCost:
+          type: number
+          description: "Total cost of buyer's order"
+        orders:
+          type: array
+          description: "List of buyer's orders"
+          items:
+            properties:
+              productName:
+                type: string
+              productCost:
+                type: string
+              quantity:
+                type: number
+        deliveryAddress:
+          type: string
+          description: "Buyer's address"
+        deliveryMethod:
+          type: string
+          description: "Buyer's preferred delivery method"
+        discountOfferId:
+          type: string
+          description: "Discount offer used by buyer"
+        orderConfirmation:
+          type: boolean
+          description: "Buyer's confirmation of order"
+          default: true
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+paths:
+  /seller/rejectOrder{orderId}:
+    post:
+      tags:
+        - "Seller - buyer"
+      summary: Seller rejects buyer's order.
+      description: Send a notifaication to the buyer about the order's rejected status.
+      operationId: rejectOrder
+      responses:
+        '201':
+          description: Created response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rejectOrderSellerToBuyer'
+        '400':
+          description: Bad request
+
+      parameters:
+        - name: date
+          in: query
+          description: Date of rejection
+          required: true
+          schema:
+            type: object
+        - name: reason
+          in: query
+          description: "Reason for rejection"
+          required: true
+          schema:
+            type: string
+        - name: orderId
+          in: path
+          description: Order id used to reference buyer's order
+          required: true
+          schema:
+            type: string
+        
+  /buyer/fetchOrderDetails/{orderId}/{customerId}/{discountOfferId}:
+    get:
+      tags:
+        - "Buyer - seller"
+      summary: Display buyer's order details.
+      description: Display buyer's order details.
+      operationId: orderResponse
+      responses:
+          '200':
+            description: Ok
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponseBuyerToSeller'
+          '503':
+            description: Service unavailable
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: "string"
+        - name: customerId
+          required: true
+          in: path
+          description: "Buyer's customer id"
+          schema:
+            type: "string"
+        - name: discountOfferId
+          required: true
+          in: path
+          description: "Disount offer id being used by buyer"
+          schema:
+            type: "string"
