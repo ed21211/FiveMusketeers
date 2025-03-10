@@ -203,15 +203,20 @@ paths:
       operationId: changeOrder
     
       responses:
-        '201':
-          description: Created response
+        '200':
+          description: Ok
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/changeOrderBuyerToSeller'
         '400':
           description: Bad request
+          # invalid orderId
+          # empty order change
+          # unavaliable products
+          # unavailable stock
 
+      #  {"orderId":string, "date":string, "orders":[ {"productName":string,"productCost":string, "quantity":int} ]}
       parameters:
         - name: orderId
           required: true
@@ -251,15 +256,17 @@ paths:
       operationId: cancelOrder
 
       responses:
-        '201':
-          description: Created response
+        '200':
+          description: Ok
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/cancelOrderBuyerToSeller'
         '400':
           description: Bad request
+          # invalid orderId
 
+      # {"orderId": string, "date": string, "reason": string}
       parameters:
         - name: orderId
           required: true
