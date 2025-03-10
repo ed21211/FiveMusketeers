@@ -110,11 +110,11 @@ components:
         type: object
         description: "Date when order was cancelled"
       cancellationStatus:
-          type: boolean
-          description: cancellation signal of buyer's order
-        orderCancellationReason:
-          type: string
-          description: reason for cancellation
+        type: boolean
+        description: cancellation signal of buyer's order
+      orderCancellationReason:
+        type: string
+        description: reason for cancellation
       
   securitySchemes:
     BasicAuth:
