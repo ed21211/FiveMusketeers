@@ -121,7 +121,7 @@ components:
       type: http
       scheme: basic
 paths:
-  /seller/rejectOrder{orderId}:
+  /seller/rejectOrder/{orderId}:
     post:
       tags:
         - "Seller - buyer"
@@ -194,7 +194,7 @@ paths:
           schema:
             type: "string"
 
-  /buyer/changeOrder{orderId}:
+  /buyer/changeOrder/{orderId}:
     put:
       tags:
         - "Buyer - seller"
@@ -242,7 +242,7 @@ paths:
                   type: number
 
 
-  /buyer/cancelOrder{orderId}:
+  /buyer/cancelOrder/{orderId}:
     delete:
       tags:
         - "Buyer - seller"
