@@ -115,7 +115,7 @@ components:
       type: http
       scheme: basic
 paths:
-  /seller/rejectOrder/{orderId}:
+  /seller/rejectOrder/:
     post:
       tags:
         - "Seller - buyer"
@@ -140,13 +140,13 @@ paths:
           schema:
             type: string
         - name: orderId
-          in: path
+          in: header
           description: "Order id used to reference buyer's order"
           required: true
           schema:
             type: string
         
-  /buyer/fetchOrderDetails/{orderId}/{customerId}:
+  /buyer/fetchOrderDetails/:
     get:
       tags:
         - "Buyer - seller"
@@ -165,13 +165,13 @@ paths:
       parameters:
         - name: orderId
           required: true
-          in: path
+          in: header
           description: "Buyer's order id"
           schema:
             type: "string"
         - name: customerId
           required: true
-          in: path
+          in: header
           description: "Buyer's customer id"
           schema:
             type: "string"
