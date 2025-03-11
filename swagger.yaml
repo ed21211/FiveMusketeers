@@ -127,7 +127,16 @@ components:
         details:
           type: string
           description: " Addional details about buyer's order added by seller"
-      
+    addDetailsBodySellerToBuyer:
+      type: object
+      properties:
+        orderId:
+          type: string
+        productId:
+          type: string
+        quantity:
+          type: number
+
   securitySchemes:
     BasicAuth:
       type: http
@@ -317,6 +326,12 @@ paths:
                 $ref: '#/components/schemas/addDetailsSellerToBuyer'
         '400':
           description: Bad request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addDetailsBodySellerToBuyer'
       parameters:
         - name: orderId
           in: query
