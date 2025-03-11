@@ -42,7 +42,7 @@ components:
           enum: ["create", "cancel", "update"]
           default: "create"
           description: "Type of order: create/ cancel/ update"
-        customerId:
+        customerEmailId:
           type: string
           description: "Buyer's personal id"
         date:
@@ -169,7 +169,7 @@ paths:
           description: "Buyer's order id"
           schema:
             type: "string"
-        - name: customerId
+        - name: customerEmailId
           required: true
           in: header
           description: "Buyer's customer id"
