@@ -85,9 +85,6 @@ components:
         orderId:
             type: string
             description: "Buyer's order id"
-        date:
-          type: object
-          description: "Date when order has been changed"
         orders:
             type: array
             description: "List of the buyer's updated orders"
@@ -106,9 +103,6 @@ components:
         orderId:
             type: string
             description: "Buyer's order id"
-        date:
-          type: object
-          description: "Date when order was cancelled"
         cancellationStatus:
           type: boolean
           description: cancellation signal of buyer's order
@@ -211,12 +205,7 @@ paths:
                 $ref: '#/components/schemas/changeOrderBuyerToSeller'
         '400':
           description: Bad request
-          # invalid orderId
-          # empty order change
-          # unavaliable products
-          # unavailable stock
 
-      #  {"orderId":string, "date":string, "orders":[ {"productName":string,"productCost":string, "quantity":int} ]}
       parameters:
         - name: orderId
           required: true
@@ -224,12 +213,6 @@ paths:
           description: "Buyer's order id"
           schema:
             type: "string"
-        - name: date
-          in: query
-          description: "Date of change"
-          required: true
-          schema:
-            type: object
         - name: orders
           in: query
           description: "list of changed orders"
@@ -274,12 +257,6 @@ paths:
           description: "Buyer's order id"
           schema:
             type: string
-        - name: date
-          in: query
-          description: "Date of cancellation"
-          required: true
-          schema:
-            type: object
         - name: reason
           in: query
           description: "Reason for cancellation"
