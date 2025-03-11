@@ -62,7 +62,7 @@ components:
               productName:
                 type: string
               productCost:
-                type: string
+                type: number
               quantity:
                 type: number
         deliveryAddress:
