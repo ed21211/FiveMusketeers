@@ -42,7 +42,7 @@ components:
           enum: ["create", "cancel", "update"]
           default: "create"
           description: "Type of order: create/ cancel/ update"
-        customerId:
+        customerEmailId:
           type: string
           description: "Buyer's personal id"
         date:
@@ -62,7 +62,7 @@ components:
               productName:
                 type: string
               productCost:
-                type: string
+                type: number
               quantity:
                 type: number
         deliveryAddress:
@@ -115,7 +115,7 @@ components:
       type: http
       scheme: basic
 paths:
-  /seller/rejectOrder/{orderId}:
+  /seller/rejectOrder/:
     post:
       tags:
         - "Seller - buyer"
@@ -133,12 +133,6 @@ paths:
           description: Bad request
 
       parameters:
-        - name: date
-          in: query
-          description: "Date of rejection"
-          required: true
-          schema:
-            type: object
         - name: reason
           in: query
           description: "Reason for rejection"
@@ -146,13 +140,13 @@ paths:
           schema:
             type: string
         - name: orderId
-          in: path
+          in: header
           description: "Order id used to reference buyer's order"
           required: true
           schema:
             type: string
         
-  /buyer/fetchOrderDetails/{orderId}/{customerId}/{discountOfferId}:
+  /buyer/fetchOrderDetails/:
     get:
       tags:
         - "Buyer - seller"
@@ -171,19 +165,19 @@ paths:
       parameters:
         - name: orderId
           required: true
-          in: path
+          in: header
           description: "Buyer's order id"
           schema:
             type: "string"
-        - name: customerId
+        - name: customerEmailId
           required: true
-          in: path
+          in: header
           description: "Buyer's customer id"
           schema:
             type: "string"
         - name: discountOfferId
-          required: true
-          in: path
+          required: false
+          in: query
           description: "Disount offer id being used by buyer"
           schema:
             type: "string"
