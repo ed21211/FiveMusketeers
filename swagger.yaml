@@ -133,12 +133,6 @@ paths:
           description: Bad request
 
       parameters:
-        - name: date
-          in: query
-          description: "Date of rejection"
-          required: true
-          schema:
-            type: object
         - name: reason
           in: query
           description: "Reason for rejection"
@@ -152,7 +146,7 @@ paths:
           schema:
             type: string
         
-  /buyer/fetchOrderDetails/{orderId}/{customerId}/{discountOfferId}:
+  /buyer/fetchOrderDetails/{orderId}/{customerId}:
     get:
       tags:
         - "Buyer - seller"
@@ -182,8 +176,8 @@ paths:
           schema:
             type: "string"
         - name: discountOfferId
-          required: true
-          in: path
+          required: false
+          in: query
           description: "Disount offer id being used by buyer"
           schema:
             type: "string"
