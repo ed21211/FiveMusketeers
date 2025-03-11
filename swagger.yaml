@@ -78,12 +78,44 @@ components:
           type: boolean
           description: "Buyer's confirmation of order"
           default: true
+
+    changeOrderBuyerToSeller:
+      type: object
+      properties:
+        orderId:
+            type: string
+            description: "Buyer's order id"
+        orders:
+            type: array
+            description: "List of the buyer's updated orders"
+            items:
+              properties:
+                productName:
+                  type: string
+                productCost:
+                  type: string
+                quantity:
+                  type: number
+  
+    cancelOrderBuyerToSeller:
+      type: object
+      properties:
+        orderId:
+            type: string
+            description: "Buyer's order id"
+        cancellationStatus:
+          type: boolean
+          description: cancellation signal of buyer's order
+        orderCancellationReason:
+          type: string
+          description: reason for cancellation
+      
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
 paths:
-  /seller/rejectOrder{orderId}:
+  /seller/rejectOrder/{orderId}:
     post:
       tags:
         - "Seller - buyer"
@@ -103,7 +135,7 @@ paths:
       parameters:
         - name: date
           in: query
-          description: Date of rejection
+          description: "Date of rejection"
           required: true
           schema:
             type: object
@@ -115,7 +147,7 @@ paths:
             type: string
         - name: orderId
           in: path
-          description: Order id used to reference buyer's order
+          description: "Order id used to reference buyer's order"
           required: true
           schema:
             type: string
@@ -128,14 +160,14 @@ paths:
       description: Display buyer's order details.
       operationId: orderResponse
       responses:
-          '200':
-            description: Ok
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/orderResponseBuyerToSeller'
-          '503':
-            description: Service unavailable
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderResponseBuyerToSeller'
+        '503':
+          description: Service unavailable
       parameters:
         - name: orderId
           required: true
@@ -155,3 +187,79 @@ paths:
           description: "Disount offer id being used by buyer"
           schema:
             type: "string"
+
+  /buyer/changeOrder/{orderId}:
+    put:
+      tags:
+        - "Buyer - seller"
+      summary: Change buyer's order.
+      description: Change buyer's order.
+      operationId: changeOrder
+    
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/changeOrderBuyerToSeller'
+        '400':
+          description: Bad request
+
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: "string"
+        - name: orders
+          in: query
+          description: "list of changed orders"
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                productName:
+                  type: string
+                productCost:
+                  type: string
+                quantity:
+                  type: number
+
+
+  /buyer/cancelOrder/{orderId}:
+    delete:
+      tags:
+        - "Buyer - seller"
+      summary: Cancel buyer's order.
+      description: Cancel buyer's order.
+      operationId: cancelOrder
+
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cancelOrderBuyerToSeller'
+        '400':
+          description: Bad request
+          # invalid orderId
+
+      # {"orderId": string, "date": string, "reason": string}
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: string
+        - name: reason
+          in: query
+          description: "Reason for cancellation"
+          required: true
+          schema:
+            type: string
