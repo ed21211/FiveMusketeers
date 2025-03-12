@@ -110,6 +110,13 @@ components:
           type: string
           description: reason for cancellation
       
+    orderReceivalSellerToBuyer:
+      type: object
+      properties: 
+        orderStatus:
+          type: string
+          example: received
+    
   securitySchemes:
     BasicAuth:
       type: http
@@ -257,3 +264,29 @@ paths:
           required: true
           schema:
             type: string
+
+
+   /seller/orderReceival:
+    put:
+      tags:
+        - "Seller - buyer"
+      summary: Seller recevies the order. 
+      description: The status of the order turns into received.
+      operationId: orderReceival 
+      responses:
+        '200':
+          description: Order status changed   
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderReceivalSellerToBuyer'
+        '400':
+          description: Bad request 
+      parameters:
+        - name: orderId
+          in: query
+          description: "Buyer's order id"
+          required: true
+          schema:
+            type: string
+ 
