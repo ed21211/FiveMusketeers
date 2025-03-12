@@ -8,6 +8,7 @@
         "allowanceInstructions": "string",
         "listOfOrders": {"products.productId",  "quantity"},
         "totalCost": 0.0,
+        "trackingNumber": 0,
         "deliveryAddress": "string",
         "deliveryMethod": "string",
         "discountOfferId": "string",
