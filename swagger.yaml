@@ -109,7 +109,34 @@ components:
         orderCancellationReason:
           type: string
           description: reason for cancellation
-      
+          
+    registerOrderSellerToBuyer:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: "Buyer's order id"
+        registered:
+          type: boolean
+          description: Confirmation of order registration
+          default: true
+          
+    addDetailsSellerToBuyer:
+      type: object
+      properties:
+        details:
+          type: string
+          description: " Addional details about buyer's order added by seller"
+    addDetailsBodySellerToBuyer:
+      type: object
+      properties:
+        orderId:
+          type: string
+        productId:
+          type: string
+        quantity:
+          type: number
+
   securitySchemes:
     BasicAuth:
       type: http
@@ -254,6 +281,61 @@ paths:
         - name: reason
           in: query
           description: "Reason for cancellation"
+          required: true
+          schema:
+            type: string
+            
+  /seller/registerOrder:
+    post:
+      tags:
+        - "Seller - buyer"
+      summary: Seller regsiters buyer's order.
+      description: Seller should register a buyer's order in the system.
+      operationId: registerOrder
+      responses:
+        '201':
+          description: Created response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registerOrderSellerToBuyer'
+        '400':
+          description: Bad request
+
+      parameters:
+        - name: orderId
+          in: query
+          description: "Buyer's order id"
+          required: true
+          schema:
+            type: string
+            
+  /seller/addDetails:
+    put:
+      tags:
+        - "Seller - buyer"
+      summary: Seller adds details about buyer's order.
+      description: Seller adds additional details about a buyer's order.
+      operationId: addDetails
+      responses:
+        '201':
+          description: Created response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addDetailsSellerToBuyer'
+        '400':
+          description: Bad request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addDetailsBodySellerToBuyer'
+      parameters:
+        - name: orderId
+          in: query
+          description: "Buyer's order id"
           required: true
           schema:
             type: string
