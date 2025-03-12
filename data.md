@@ -3,7 +3,7 @@
 "Orders": [
     {
         "orderId": "string",
-        "orderStatus": "[created, updated, accepeted, rejected]", // enum
+        "orderStatus": "[created, received, updated, accepeted, rejected]", // enum
         "date": {},
         "allowanceInstructions": "string",
         "listOfOrders": {"products.productId",  "quantity"},
