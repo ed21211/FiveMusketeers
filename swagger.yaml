@@ -394,3 +394,63 @@ paths:
                 $ref: '#/components/schemas/orderAcceptanceSellerToBuyer'
         '400':
           description: Bad request 
+
+   /buyer/acceptOrder/{orderId}:
+    post:
+      tags:
+        - "Buyer - seller"
+      summary: Buyer should confirm their order details.
+      description: Buyer should confirm their order details.
+      operationId: acceptOrder
+      responses:
+          '201':
+            description: Order created
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponseBuyerToSeller'
+          '202':
+            description: Order accepted
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: "string"
+
+  /buyer/receivedResponses/{orderId}:
+    get:
+      tags:
+        - "Buyer - seller"
+      summary: Buyer receives responses from the seller regarding their order.
+      description: Buyer receives responses from the seller regarding their order.
+      operationId: receivedResponses
+      responses:
+          '200':
+            description: Ok
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponseBuyerToSeller'
+          '503':
+            description: Service unavailable
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: "string"
+        - name: sellerResponse
+          required: false
+          in: query
+          description: "Indicates whether the seller accepts or rejects the order. Possible values: 'accepted', 'rejected'."
+          schema:
+            type: "string"
+        - name: additionalDetails
+          required: false
+          in: query
+          description: "Additional details or comments provided by the seller regarding the order."
+          schema:
+            type: "string"
