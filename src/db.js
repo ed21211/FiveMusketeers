@@ -7,6 +7,7 @@ const pool = new Pool({
   database: 'order_creation',
   password: 'seng2021',
   port: 5432,
+  ssl: { rejectUnauthorized: false } // SSL encryption
 });
 
 
