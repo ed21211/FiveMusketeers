@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   user: 'postgres',
   host: 'musksdb.cw5opdtderna.us-east-1.rds.amazonaws.com',
-  database: 'Musksdb',
+  database: 'order_creation',
   password: 'seng2021',
   port: 5432,
 });
@@ -17,3 +17,4 @@ pool.connect()
   });
 
 module.exports = pool;
+
