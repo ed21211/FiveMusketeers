@@ -1,7 +1,9 @@
 {
   "type": "module",
   "dependencies": {
-    "express": "^4.21.2"
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "pg": "^8.14.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
@@ -26,5 +28,20 @@
         "statements": 85
       }
     }
-  }
+  },
+  "name": "fivemusketeers",
+  "description": "SENG2021 Project",
+  "version": "1.0.0",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ed21211/FiveMusketeers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ed21211/FiveMusketeers/issues"
+  },
+  "homepage": "https://github.com/ed21211/FiveMusketeers#readme"
 }
