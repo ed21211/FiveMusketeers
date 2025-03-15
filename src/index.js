@@ -10,7 +10,7 @@ app.use('/buyer', buyer);
 app.use('/seller', seller);
 
 app.get("/", (req, res) => {
-	res.json({ message: "Hello World"  });
+	res.json({ message: "Welcome to FiveMusketeer's Order Creation API"  });
 })
 
 

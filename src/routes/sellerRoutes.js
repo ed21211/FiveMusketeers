@@ -6,8 +6,7 @@ const seller = express.Router();
 app.use(express.json());
 
 seller.get("/users", async (req, res) => {
-    const result = await pool.query('SELECT * FROM customers');
-    res.json(result.rows);
+    const result = await users();
 });
 
 export default seller;
