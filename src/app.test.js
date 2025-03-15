@@ -1,4 +1,3 @@
-import pool from '../db';
 import { login } from './controllers/buyerController';
 
 
