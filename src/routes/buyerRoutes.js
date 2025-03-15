@@ -1,5 +1,4 @@
 import express from 'express';
-import pool from '../db.js';
 import HTTPError from 'http-errors';
 import errorHandler from 'middleware-http-errors';
 const app = express();
@@ -25,8 +24,8 @@ buyer.post("/login", async (req, res) => {
 
 // BUYER CREATES ORDER
 buyer.post("/createOrder", async (req, res) => {
-	const { email, ordersList, deliveryAddressProvided } = req.body;
-	const result = await createOrder(email, ordersList, deliveryAddressProvided);
+	const { email, ordersList, deliveryAddress } = req.body;
+	const result = await createOrder(email, ordersList, deliveryAddress);
 
 	if (result.code !== 201) {
 		throw HTTPError(result.code, result.message);

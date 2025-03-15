@@ -1,16 +1,18 @@
 import pool from '../db.js';
 
-
 /**
  * Description: Function to get all users
  * @param {*} 
  * @returns - Array of customer records
  */
 
-export async function users () {
+export async function users() {
     try {
-        const users = await pool.query('SELECT * FROM customers');
-        return users.rows;
+        const users = await pool.query('SELECT *  FROM customers');
+        return {
+            code: 200,
+            message: users.rows
+        };
     } catch (error) {
         return { 
           code: 500, 

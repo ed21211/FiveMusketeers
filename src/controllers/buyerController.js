@@ -31,8 +31,9 @@ export async function login (email) {
  * @returns 
  */
 
-export async function createOrder (email, ordersList, deliveryAddressProvided) {
+export async function createOrder (email, ordersList, deliveryAddress) {
   let totalCostCalculated = 0.0;
+  console.log("hi");
 
   if (!await existingEmail(email)) {
     return {
@@ -41,7 +42,7 @@ export async function createOrder (email, ordersList, deliveryAddressProvided) {
     };
   }
 
-  if (!validAddress(deliveryAddressProvided)) {
+  if (!validAddress(deliveryAddress)) {
     return {
       code: 400,
       message: 'Invalid delivery address'
@@ -60,6 +61,7 @@ export async function createOrder (email, ordersList, deliveryAddressProvided) {
   }
 
   const client = await pool.connect();
+  console.log("issue1");
   try {
     await client.query('BEGIN'); // if order creation process fails, patial data will be removed
     const orderResult = await client.query(
@@ -68,7 +70,7 @@ export async function createOrder (email, ordersList, deliveryAddressProvided) {
       ) VALUES (
         'created', CURRENT_DATE, $1, $2, FALSE, (SELECT id FROM customers WHERE email = $3)
       ) RETURNING id`,
-      [totalCostCalculated, deliveryAddressProvided, email]
+      [totalCostCalculated, deliveryAddress, email]
     );
   
     const orderId = orderResult.rows[0].id;
@@ -111,7 +113,7 @@ export async function signout( email ) {
       message: 'Invalid email!'
     };
   }
-	await pool.query(
+	const result = await pool.query(
 		"DELETE FROM customers WHERE email = $1 RETURNING *",
 		[email]
 	);
