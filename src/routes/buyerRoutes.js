@@ -1,36 +1,49 @@
-import express from 'express';
+const express = require('express');
+const pool = require('../db.js');
+const app = express();
+
+app.use(express.json());
+
 const buyer = express.Router();
 
-const users = [];
-
-buyer.post("/login", (req, res) => {
+buyer.post("/login", async (req, res) => {
 	const { user } = req.body;
-	users.push({ email: user.email });
 
-	console.log(users);
-	res.json({ loggedin: true, status: "Welcome to the 5Musks Order Creation!" });
+	if (!user?.email) {
+		return res.status(400).json({ error: "Email is required" });
+	}
+
+	const existing = await pool.query(
+		"SELECT * FROM customers WHERE email = $1",
+		[user.email]
+	);
+
+	console.log("Query result:", existing.rows);
+
+	if (existing.rows.length === 0) {
+		await pool.query(
+			"INSERT INTO customers (email, signedUp) VALUES ($1, $2)",
+			[user.email, false]
+		);
+		return res.json({ loggedin: true, status: "Welcome new user!" });
+	} else {
+		return res.json({ loggedin: true, status: "Welcome back!" });
+	}
 });
 
-buyer.get("/users", (_, res) => {
-	res.json(users);
-})
-
-buyer.put("/update",  (req,res) => {
-
-})
-
-buyer.delete("/delete",  (req,res) => {
+buyer.delete("/delete", async (req, res) => {
 	const { user } = req.body;
-	const existingUser = users.find(u => u.email);
-	console.log(existingUser);
 
-	if (!existingUser) {
-		res.statusCode(401).json({errorStatus: "Credentials did not match"});
-	};
+	const result = await pool.query(
+		"DELETE FROM customers WHERE email = $1 RETURNING *",
+		[user.email]
+	);
 
-	users.splice(users.indexOf(existingUser), 1);
-	res.json(users);
-	
-})
+	if (result.rowCount === 0) {
+		return res.status(404).json({ errorStatus: "User not found" });
+	}
 
-export default buyer;
+	res.json({ message: "User deleted", deleted: result.rows[0] });
+});
+
+module.exports = buyer;

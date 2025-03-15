@@ -1,12 +1,14 @@
-import express from 'express';
+const express = require('express');
+const pool = require('./db.js');
+const buyer = require('./routes/buyerRoutes.js');
+const seller = require('./routes/sellerRoutes.js');
+
 const app = express();
-import buyer from './routes/buyerRoutes.js';
+const PORT = 5000;
 
 app.use(express.json());
 app.use('/buyer', buyer);
-
-
-const PORT = 5000;
+app.use('/seller', seller);
 
 app.get("/", (req, res) => {
 	res.json({ message: "Hello World"  });
