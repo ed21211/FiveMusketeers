@@ -1,4 +1,4 @@
-import pool from '../db'
+import pool from '../db';
 import { login } from './controllers/buyerController';
 
 
@@ -13,5 +13,5 @@ describe("POST /login", () => {
         expect(result.code).toBe(400);
         expect(result.message).toBe('Email is required.');
     });
-})
+});
 

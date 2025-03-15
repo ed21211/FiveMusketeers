@@ -11,10 +11,10 @@ app.use('/seller', seller);
 
 app.get("/", (req, res) => {
 	res.json({ message: "Welcome to FiveMusketeer's Order Creation API"  });
-})
+});
 
 
 app.listen(PORT, () => {
 	console.log("Server Running on PORT", PORT);
-})
+});
 

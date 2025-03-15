@@ -8,7 +8,7 @@ import pool from '../db.js';
 
 export async function login (email) {
   if (!validEmail(email)) {
-    return {code: 400, message: 'Email is required.'}
+    return {code: 400, message: 'Email is required.'};
   }
 
   if (!await existingEmail(email)) {
@@ -16,9 +16,9 @@ export async function login (email) {
 			"INSERT INTO customers (email, signedUp) VALUES ($1, $2)",
 			[email, false]
 		);
-    return { code: 200, message: 'Welcome new user!' }
+    return { code: 200, message: 'Welcome new user!' };
 	} else {
-    return { code: 200, message: 'Welcome back!' }
+    return { code: 200, message: 'Welcome back!' };
 	}
 }
 
@@ -33,7 +33,6 @@ export async function login (email) {
 
 export async function createOrder (email, ordersList, deliveryAddress) {
   let totalCostCalculated = 0.0;
-  console.log("hi");
 
   if (!await existingEmail(email)) {
     return {
@@ -61,33 +60,34 @@ export async function createOrder (email, ordersList, deliveryAddress) {
   }
 
   const client = await pool.connect();
-  console.log("issue1");
   try {
     await client.query('BEGIN'); // if order creation process fails, patial data will be removed
     const orderResult = await client.query(
       `INSERT INTO orderDetails (
-        status, date, totalCost, deliveryAddress, orderConfirmation, customerId
+        status, date, totalCost, deliveryAddress, deliveryMethod, orderConfirmation, customerId
       ) VALUES (
-        'created', CURRENT_DATE, $1, $2, FALSE, (SELECT id FROM customers WHERE email = $3)
+        'created', CURRENT_DATE, $1, $2, 'bird-mail', FALSE, (SELECT id FROM customers WHERE email = $3)
       ) RETURNING id`,
       [totalCostCalculated, deliveryAddress, email]
     );
   
     const orderId = orderResult.rows[0].id;
     for (const order of ordersList) {
+
       await client.query(
         `INSERT INTO orderItems (orderId, productId, quantity
         ) VALUES (
-          $1, (SELECT id FROM products WHERE name = $2), $3)`,
-        [orderId, order.productname, order.productQuantity]
+          $1, (SELECT id FROM products WHERE id = $2), $3)`,
+        [orderId, order.productId, order.productQuantity]
       );
+      console.log('+\n');
     }
 
     await client.query('COMMIT');
     return {
       code: 201,
       message: 'Order created successfully'
-    }
+    };
 
   } catch (error) {
     await client.query('ROLLBACK'); // removes all data 
@@ -128,7 +128,7 @@ export async function signout( email ) {
   return {
     code: 200,
     message: 'Logged out successfully.'
-  }
+  };
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper functions
