@@ -1,5 +1,5 @@
-const express = require('express');
-const pool = require('../db.js');
+import express from 'express';
+import pool from '../db.js';
 const app = express();
 
 const seller = express.Router();
@@ -10,4 +10,4 @@ seller.get("/users", async (req, res) => {
     res.json(result.rows);
 });
 
-module.exports = seller;
+export default seller;

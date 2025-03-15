@@ -1,5 +1,5 @@
-const express = require('express');
-const pool = require('../db.js');
+import express from 'express';
+import pool from '../db.js';
 const app = express();
 
 app.use(express.json());
@@ -12,6 +12,8 @@ buyer.post("/login", async (req, res) => {
 	if (!user?.email) {
 		return res.status(400).json({ error: "Email is required" });
 	}
+
+	console.log("hi");
 
 	const existing = await pool.query(
 		"SELECT * FROM customers WHERE email = $1",
@@ -46,4 +48,4 @@ buyer.delete("/delete", async (req, res) => {
 	res.json({ message: "User deleted", deleted: result.rows[0] });
 });
 
-module.exports = buyer;
+export default buyer;

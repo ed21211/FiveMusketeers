@@ -1,7 +1,6 @@
-const express = require('express');
-const pool = require('./db.js');
-const buyer = require('./routes/buyerRoutes.js');
-const seller = require('./routes/sellerRoutes.js');
+import express from 'express';
+import buyer from './routes/buyerRoutes.js';
+import seller from './routes/sellerRoutes.js';
 
 const app = express();
 const PORT = 5000;
