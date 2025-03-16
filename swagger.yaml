@@ -27,7 +27,7 @@ components:
       properties:
         orders:
           type: array
-          description: "List of products added to the cart"
+          description: "List of products added to cart"
           items:
             type: object
             properties:
