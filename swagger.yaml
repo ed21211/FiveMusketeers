@@ -481,4 +481,4 @@ paths:
               schema:
                 $ref: '#/components/schemas/orderAcceptanceSellerToBuyer'
         '400':
-          description: Bad request 
+          description: Bad request
