@@ -79,3 +79,77 @@ export async function addProducts(products) {
     }
 }
 
+/**
+ * This will return the list of orders or one specific order depending on whether 
+ * orderId is specified
+ * @param {number} orderId 
+ * @returns 
+ */
+export async function viewOrder(orderId) {
+    const client = await pool.connect();
+    try {    
+        const result = await pool.query('SELECT * FROM orderDetails WHERE id = $1', [orderId]);
+
+        if (result.rows.length === 0) {
+            return {
+                code: 404,
+                message: `Order with ID ${orderId} is not found.`
+            }
+        }
+
+        return {
+            code: 200,
+            message: result.rows[0]
+        };
+    } catch (error) {
+        console.error("Error fetching order details:", error);
+        return { 
+            code: 500, 
+            message: 'Error fetching the orders.'
+        };
+    } finally {
+        client.release(); // Release client back to the pool
+    }
+}
+
+/**
+ * Get all of the orders linked to this buyer 
+ * @param {number} customerId 
+ * @returns 
+ */
+export async function viewBuyerOrders(customerId) {
+    const client = await pool.connect();
+    try {    
+        const result = await pool.query(
+            `Select o.id AS order_id, o.status, o.date, o.allowanceInstruction, 
+             o.totalCost, o.trackingNumber, o.deliveryAddress, o.deliveryMethod, 
+             o.discountOfferId, o.orderConfirmation
+             FROM orderDetails o
+             JOIN customers c ON o.customerId = c.id
+             WHERE o.customerId = $1`, 
+             [customerId]
+        );
+
+        if (result.rows.length === 0) {
+            return {
+                code: 404,
+                message: `Order with ID ${customerId} is not found.`
+            }
+        }
+
+        return {
+            code: 200,
+            message: result.rows
+        };
+    
+    } catch (error) {
+        console.error("Error fetching buyer's orders:", error);
+        return { 
+            code: 500, 
+            message: 'Error fetching the orders.'
+        };
+    } finally {
+        client.release(); // Release client back to the pool
+    }
+}
+
