@@ -13,384 +13,343 @@ externalDocs:
 # servers:
   # - url: https://petstore3.swagger.io/api/v3
 tags:
-  - name: "Buyer - seller"
-    description: "Routes in the buyer - seller interface"
+  - name: "Buyer - Seller"
+    description: "Routes in the Buyer - Seller interface"
 
-  - name: "Seller - buyer"
-    description: "Routes in the seller-buyer interface"
+  - name: "Seller - Buyer"
+    description: "Routes in the Seller - Buyer interface"
 
 components:
   schemas:
-    rejectOrderSellerToBuyer:
+    successfulRequest:
       type: object
       properties:
-        rejectedStatus:
-          type: boolean
-          description: rejected status of buyer's order
-        orderRejectionReason:
+        message:
           type: string
-          description: reason for rejection
-
-    orderResponseBuyerToSeller:
+          description: "string related to the sucessful request."
+    
+    badRequest:
       type: object
       properties:
-        orderId:
+        message:
           type: string
-          description: "Buyer's order id"
-        orderType:
+          description: "Error message explaining the reason for the bad request."      
+    serverError:
+      type: object
+      properties:
+        message:
           type: string
-          enum: ["create", "cancel", "update"]
-          default: "create"
-          description: "Type of order: create/ cancel/ update"
-        customerEmailId:
+          description: "Error message explaining the reason for the server error; lokely due to accessing and interacting with the database."   
+    orderList:
+      type: array
+      items:
+        type: object
+        properties:
+          productId:
+            type: number
+            description: "Product identification"
+          productCost:
+            type: number
+            description: "Cost of this product"
+          quantity:
+            type: number
+            description: "Amount the buyer wants of this specific product"
+    
+    orderDetails:
+      type: object
+      properties:
+        email:
           type: string
-          description: "Buyer's personal id"
-        date:
-          type: object
-          description: "Date of creation/ cancellation/rejection/ update"
-        allowanceInstructions:
-          type: string
-          description: "Allowance/charge instructions(freight, documentation)"
-        totalCost:
-          type: number
-          description: "Total cost of buyer's order"
+          description: "Buyer's email"
         orders:
           type: array
-          description: "List of buyer's orders"
           items:
+            type: object
             properties:
-              productName:
-                type: string
+              productId:
+                type: number
+                description: "Product identification"
               productCost:
                 type: number
+                description: "Cost of this product"
               quantity:
                 type: number
+                description: "Amount the buyer wants of this specific product"
         deliveryAddress:
           type: string
-          description: "Buyer's address"
-        deliveryMethod:
-          type: string
-          description: "Buyer's preferred delivery method"
-        discountOfferId:
-          type: string
-          description: "Discount offer used by buyer"
-        orderConfirmation:
-          type: boolean
-          description: "Buyer's confirmation of order"
-          default: true
-
-    changeOrderBuyerToSeller:
-      type: object
-      properties:
-        orderId:
-            type: string
-            description: "Buyer's order id"
-        orders:
-            type: array
-            description: "List of the buyer's updated orders"
-            items:
-              properties:
-                productName:
-                  type: string
-                productCost:
-                  type: string
-                quantity:
-                  type: number
+          description: "buyer's delivery address"
   
-    cancelOrderBuyerToSeller:
-      type: object
-      properties:
-        orderId:
-            type: string
-            description: "Buyer's order id"
-        cancellationStatus:
-          type: boolean
-          description: cancellation signal of buyer's order
-        orderCancellationReason:
-          type: string
-          description: reason for cancellation
-          
-    registerOrderSellerToBuyer:
-      type: object
-      properties:
-        orderId:
-          type: string
-          description: "Buyer's order id"
-        registered:
-          type: boolean
-          description: Confirmation of order registration
-          default: true
-          
-    addDetailsSellerToBuyer:
-      type: object
-      properties:
-        details:
-          type: string
-          description: " Addional details about buyer's order added by seller"
-    addDetailsBodySellerToBuyer:
-      type: object
-      properties:
-        orderId:
-          type: string
-        productId:
-          type: string
-        quantity:
-          type: number
-    
-    orderReceivalSellerToBuyer:
-      type: object
-      properties:
-        orderStatus:
-          type: string
-          example: received
-    
-    orderAcceptanceSellerToBuyer:
-      type: object
-      properties:
-        orderStatus:
-          type: string
-          example: accepted
-
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
+
 paths:
-  /seller/rejectOrder/:
+  /buyer/login:
     post:
       tags:
-        - "Seller - buyer"
-      summary: Seller rejects buyer's order.
-      description: Send a notifaication to the buyer about the order's rejected status.
-      operationId: rejectOrder
+        - "Buyer - Seller"
+      summary: Buyer login.
+      description: Adds the buyer to the database if they're a new user, and sets the buyer as logged in. 
+      operationId: login
+      parameters:
+      - name: email
+        required: true
+        in: query
+        description: "Buyer's email"
+        schema:
+          type: "string"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successfulRequest'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+                
+  /buyer/signout:
+    post:
+      tags:
+        - "Buyer - Seller"
+      summary: Buyer logout.
+      description: Allows the buyer to logout using their email as confirmation. 
+      operationId: signout
+      parameters:
+      - name: email
+        required: true
+        in: query
+        description: "Buyer's email"
+        schema:
+          type: "string"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successfulRequest'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+                
+  /buyer/createOrder:
+    post:
+      tags:
+        - "Buyer - Seller"
+      summary: Create buyer's order.
+      description: Allows a buyer to add products to their cart by specifying the product list and quantity.
+      operationId: createOrder
+      parameters:
+        - name: email
+          required: true
+          in: query
+          description: "Buyer's email"
+          schema:
+            type: "string"
+        - name: orderList
+          in: query
+          description: "Buyer's list of orders"
+          required: true
+          schema:
+            $ref: '#/components/schemas/orderList'
+        - name: deliveryAddress
+          required: true
+          in: query
+          description: "Buyer's delivery address"
+          schema:
+            type: "string"
       responses:
         '201':
-          description: Created response
+          description: created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/rejectOrderSellerToBuyer'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: "Order created successfully. Your order id: ${orderId}"
         '400':
           description: Bad request
-
-      parameters:
-        - name: reason
-          in: query
-          description: "Reason for rejection"
-          required: true
-          schema:
-            type: string
-        - name: orderId
-          in: header
-          description: "Order id used to reference buyer's order"
-          required: true
-          schema:
-            type: string
-        
-  /buyer/fetchOrderDetails/:
-    get:
-      tags:
-        - "Buyer - seller"
-      summary: Display buyer's order details.
-      description: Display buyer's order details.
-      operationId: orderResponse
-      responses:
-        '200':
-          description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/orderResponseBuyerToSeller'
-        '503':
-          description: Service unavailable
-      parameters:
-        - name: orderId
-          required: true
-          in: header
-          description: "Buyer's order id"
-          schema:
-            type: "string"
-        - name: customerEmailId
-          required: true
-          in: header
-          description: "Buyer's customer id"
-          schema:
-            type: "string"
-        - name: discountOfferId
-          required: false
-          in: query
-          description: "Disount offer id being used by buyer"
-          schema:
-            type: "string"
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
 
-  /buyer/changeOrder/{orderId}:
+  /buyer/updateOrder/{orderId}:
     put:
       tags:
-        - "Buyer - seller"
-      summary: Change buyer's order.
-      description: Change buyer's order.
-      operationId: changeOrder
-    
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/changeOrderBuyerToSeller'
-        '400':
-          description: Bad request
-
+        - "Buyer - Seller"
+      summary: Update buyer's order.
+      description: Allows a buyer to add or remove products from their cart by specifying the product list and quantity.
+      operationId: updateOrder
       parameters:
         - name: orderId
           required: true
           in: path
           description: "Buyer's order id"
           schema:
-            type: "string"
-        - name: orders
+            type: number
+        - name: updatedOrdersList
           in: query
-          description: "list of changed orders"
+          description: "Buyer's list of changed orders"
           required: true
           schema:
-            type: array
-            items:
-              type: object
-              properties:
-                productName:
-                  type: string
-                productCost:
-                  type: string
-                quantity:
-                  type: number
-
-
-  /buyer/cancelOrder/{orderId}:
+            $ref: '#/components/schemas/orderList'
+      responses:
+        '200':
+          description: 'Order updated successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successfulRequest'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+    
+  /buyer/deleteOrder/{orderId}:
     delete:
       tags:
-        - "Buyer - seller"
-      summary: Cancel buyer's order.
-      description: Cancel buyer's order.
-      operationId: cancelOrder
-
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/cancelOrderBuyerToSeller'
-        '400':
-          description: Bad request
-          # invalid orderId
-
-      # {"orderId": string, "date": string, "reason": string}
+        - "Buyer - Seller"
+      summary: Delete buyer's order.
+      description: Allows a buyer to delete their whole order based on the order Id given.
+      operationId: deleteOrder
       parameters:
         - name: orderId
           required: true
           in: path
           description: "Buyer's order id"
           schema:
-            type: string
+            type: number
         - name: reason
           in: query
           description: "Reason for cancellation"
           required: true
           schema:
             type: string
-            
-  /seller/registerOrder:
-    post:
-      tags:
-        - "Seller - buyer"
-      summary: Seller regsiters buyer's order.
-      description: Seller should register a buyer's order in the system.
-      operationId: registerOrder
-      responses:
-        '201':
-          description: Created response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/registerOrderSellerToBuyer'
-        '400':
-          description: Bad request
-
-      parameters:
-        - name: orderId
-          in: query
-          description: "Buyer's order id"
-          required: true
-          schema:
-            type: string
-            
-  /seller/addDetails:
-    put:
-      tags:
-        - "Seller - buyer"
-      summary: Seller adds details about buyer's order.
-      description: Seller adds additional details about a buyer's order.
-      operationId: addDetails
-      responses:
-        '201':
-          description: Created response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/addDetailsSellerToBuyer'
-        '400':
-          description: Bad request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/addDetailsBodySellerToBuyer'
-      parameters:
-        - name: orderId
-          in: query
-          description: "Buyer's order id"
-          required: true
-          schema:
-            type: string
-  
-  /seller/orderReceival:
-    put:
-      tags:
-        - Seller - buyer
-      summary: Seller recevies the order.
-      description: The status of the order turns into received.
-      operationId: orderReceival
       responses:
         '200':
-          description: Order status changed
+          description: "Cancelled order sucessfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/orderReceivalSellerToBuyer'
+                $ref: '#/components/schemas/successfulRequest'
         '400':
           description: Bad request
-      parameters:
-        - name: orderId
-          in: query
-          description: Buyer's order id
-          required: true
-          schema:
-            type: string
-  
-  /seller/orderAcceptance:
-    put:
-      tags:
-        - "Seller - buyer"
-      summary: Seller accepts the order. 
-      description: The status of the order turns into accepted.
-      operationId: orderAcceptance 
-      responses:
-        '200':
-          description: Order status changed   
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/orderAcceptanceSellerToBuyer'
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'  
+  
+  /buyer/orderDetails/{orderId}:
+    get:
+      tags:
+        - "Buyer - Seller"
+      summary: Buyer retrieves their order details.
+      description: Buyer retrieves their order details.
+      operationId: orderDetails
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: number
+      responses:
+        '200':
+          description: "Sucessfully retrieves order details"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderDetails'
         '400':
           description: Bad request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'     
+  #redundant; change to buyer checkout
+  /buyer/checkout/{orderId}: 
+    post:
+      tags:
+        - "Buyer - Seller"
+      summary: Provide checkout details.
+      description: Allows a buyer to enter payment and delivery details to finalize their order.
+      operationId: checkoutOrder
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's order id"
+          schema:
+            type: number
+        # other checkout parameters
+      responses:
+        '200':
+          description: "Checkout details submitted successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successfulRequest'
+        '400':
+          description: Bad request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+             
+
