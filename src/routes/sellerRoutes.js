@@ -1,13 +1,45 @@
 import express from 'express';
-import pool from '../db.js';
+import HTTPError from 'http-errors';
+import errorHandler from 'middleware-http-errors';
 const app = express();
 
-const seller = express.Router();
 app.use(express.json());
+const seller = express.Router();
+
+import { users, products, addProducts } from '../controllers/sellerController.js';
 
 seller.get("/users", async (req, res) => {
-    const result = await pool.query('SELECT * FROM customers');
-    res.json(result.rows);
+    const result = await users();
+
+    if (result.code !== 200) {
+        throw new HTTPError(result.code, result.message);
+    }
+
+    res.json(result);
 });
+
+seller.get("/products", async (req, res) => {
+    const result = await products();
+
+    if (result.code !== 200) {
+        throw new HTTPError(result.code, result.message);
+    }
+
+    res.json(result);
+});
+
+
+seller.post("/addProducts", async (req, res) => {
+    const { products } = req.body;
+    const result = await addProducts(products);
+
+    if (result.code !== 201) {
+        throw new HTTPError(result.code, result.message);
+    }
+
+    res.json(result);
+});
+
+app.use(errorHandler());
 
 export default seller;
