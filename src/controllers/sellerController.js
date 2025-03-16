@@ -80,8 +80,7 @@ export async function addProducts(products) {
 }
 
 /**
- * This will return the list of orders or one specific order depending on whether 
- * orderId is specified
+ * This will return the order based on the orderId
  * @param {number} orderId 
  * @returns 
  */
