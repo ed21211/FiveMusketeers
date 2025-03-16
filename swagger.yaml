@@ -21,6 +21,42 @@ tags:
 
 components:
   schemas:
+
+    createOrderRequest:
+      type: object
+      properties:
+        orders:
+          type: array
+          description: "List of products added to the cart"
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                description: "Unique ID of the product"
+              productCost:
+                type: number
+                description: "Cost per unit of the product"
+              quantity:
+                type: number
+                description: "Quantity of the product"
+
+    checkoutDetailsRequest:
+      type: object
+      properties:
+        customerEmailId:
+          type: string
+          description: "Email ID of the buyer"
+        orderId:
+          type: string
+          description: "Order ID generated at checkout"
+        paymentMethod:
+          type: string
+          description: "Payment method selected by the buyer"
+        discountCode:
+          type: string
+          description: "Optional discount code applied"
+
     rejectOrderSellerToBuyer:
       type: object
       properties:
@@ -155,7 +191,59 @@ components:
     BasicAuth:
       type: http
       scheme: basic
+
+
 paths:
+  /buyer/createOrder:
+    post:
+      tags:
+        - "Buyer - seller"
+      summary: Create an order (Add to Cart)
+      description: Allows a buyer to add products to their cart by specifying the product list and quantity.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createOrderRequest"
+      responses:
+        '201':
+          description: Items added to cart successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cartId:
+                    type: string
+                    description: "Unique ID for the cart session"
+        '400':
+          description: Invalid request data
+        '500':
+          description: Internal server error
+
+  /buyer/checkoutDetails:
+    post:
+      tags:
+        - "Buyer - seller"
+      summary: Provide checkout details
+      description: Allows a buyer to enter payment and delivery details to finalize their order.
+      operationId: checkoutDetails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkoutDetailsRequest"
+      responses:
+        '200':
+          description: Checkout details submitted successfully
+        '400':
+          description: Invalid request data
+        '500':
+          description: Internal server error
+          
   /seller/rejectOrder/:
     post:
       tags:
