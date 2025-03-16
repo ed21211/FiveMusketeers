@@ -26,20 +26,37 @@ components:
       properties:
         message:
           type: string
-          description: "string related to the sucessful request."
+          description: "string related to the successful request."
     
+    created:
+        type: object
+        properties:
+          message:
+            type: string
+            description: "Message indicating a resource has been created successfully."
+      
     badRequest:
       type: object
       properties:
         message:
           type: string
-          description: "Error message explaining the reason for the bad request."      
+          description: "Error message explaining the reason for the bad request."
+    
     serverError:
       type: object
       properties:
         message:
           type: string
-          description: "Error message explaining the reason for the server error; lokely due to accessing and interacting with the database."   
+          description: "Error message explaining the reason for the server error"   
+          example: "Oops! Something went wrong. Please try again later."
+    
+    notFound:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message indicating a resource cound not be found in the system."
+      
     orderList:
       type: array
       items:
@@ -51,9 +68,11 @@ components:
           productCost:
             type: number
             description: "Cost of this product"
+            example: 3
           quantity:
             type: number
             description: "Amount the buyer wants of this specific product"
+            example: 2
     
     orderDetails:
       type: object
@@ -72,12 +91,53 @@ components:
               productCost:
                 type: number
                 description: "Cost of this product"
+                example: 3
               quantity:
                 type: number
                 description: "Amount the buyer wants of this specific product"
+                example: 2
         deliveryAddress:
           type: string
-          description: "buyer's delivery address"
+          description: "Buyer's delivery address"
+          example: "12 Lettuce Rd, Vegetable NSW 2033"
+    
+    userList:
+      type: array
+      items:
+        type: object
+        properties:
+          userId:
+            type: number
+            description: "User identification."
+          email:
+            type: string
+            description: "User's email."
+            example: ""
+          signedIn:
+            type: boolean
+            description: "Whether the user is currently signed in."
+            
+    productList:
+      type: array
+      items:
+        type: object
+        properties:
+          productId:
+            type: number
+            description: "Product identification."
+          name:
+            type: string
+            description: "Name of the product."
+            example: "Baby Carrots"
+          cost:
+            type: number
+            format: float
+            description: "Price of a single product."
+            example: 3
+          stockRemaining:
+            type: number
+            description: "Amount of stock remaining for this product."
+            example: 16
   
   securitySchemes:
     BasicAuth:
@@ -92,26 +152,34 @@ paths:
       summary: Buyer login.
       description: Adds the buyer to the database if they're a new user, and sets the buyer as logged in. 
       operationId: login
-      parameters:
-      - name: email
+      requestBody:
         required: true
-        in: query
-        description: "Buyer's email"
-        schema:
-          type: "string"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Buyer's email
+                  example: "buyer@example.com"
       responses:
         '200':
-          description: Ok
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/successfulRequest'
+              example:
+                message: "Sucessfully signed in."
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid Email."
         '500':
           description: Internal Server Error
           content:
@@ -126,26 +194,34 @@ paths:
       summary: Buyer logout.
       description: Allows the buyer to logout using their email as confirmation. 
       operationId: signout
-      parameters:
-      - name: email
+      requestBody:
         required: true
-        in: query
-        description: "Buyer's email"
-        schema:
-          type: "string"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Buyer's email
+                  example: "buyer@example.com"
       responses:
         '200':
-          description: Ok
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/successfulRequest'
-        '400':
-          description: Bad request
+              example:
+                  message: "Sucessfully signed out."
+        '404':
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                  message: "Incorrect email."
         '500':
           description: Internal Server Error
           content:
@@ -160,48 +236,64 @@ paths:
       summary: Create buyer's order.
       description: Allows a buyer to add products to their cart by specifying the product list and quantity.
       operationId: createOrder
-      parameters:
-        - name: email
-          required: true
-          in: query
-          description: "Buyer's email"
-          schema:
-            type: "string"
-        - name: orderList
-          in: query
-          description: "Buyer's list of orders"
-          required: true
-          schema:
-            $ref: '#/components/schemas/orderList'
-        - name: deliveryAddress
-          required: true
-          in: query
-          description: "Buyer's delivery address"
-          schema:
-            type: "string"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "Buyer's email"
+                  example: "buyer@example.com"
+                orderList:
+                  type: array
+                  description: "Buyer's list of orders"
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: number
+                        description: "Product identification"
+                      productCost:
+                        type: number
+                        description: "Cost of this product"
+                        example: 3
+                      quantity:
+                        type: number
+                        description: "Amount the buyer wants of this specific product"
+                        example: 5
+                deliveryAddress:
+                  type: string
+                  description: "Buyer's delivery address"
+                  example: "12 Lettuce Rd, Vegetable NSW 2033"
+                        
       responses:
         '201':
-          description: created
+          description: Created
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: "Order created successfully. Your order id: ${orderId}"
+                $ref: '#/components/schemas/created'
+              example:
+                message: "Order created successfully."
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid delivery address!"
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/serverError'
+              example:  
+                message: "Error creating order, please try again later."
 
   /buyer/updateOrder/{orderId}:
     put:
@@ -217,31 +309,55 @@ paths:
           description: "Buyer's order id"
           schema:
             type: number
-        - name: updatedOrdersList
-          in: query
-          description: "Buyer's list of changed orders"
-          required: true
-          schema:
-            $ref: '#/components/schemas/orderList'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updatedOrderList:
+                  type: array
+                  description: "Buyer's list of orders altered"
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: number
+                        description: "Product identification"
+                      productCost:
+                        type: number
+                        description: "Cost of this product"
+                        example: 3
+                      quantity:
+                        type: number
+                        description: "Amount the buyer wants of this specific product"
+                        example: 5
       responses:
-        '200':
-          description: 'Order updated successfully'
+        '201':
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/successfulRequest'
+                $ref: '#/components/schemas/created'
+              example:
+                message: "Order updated successfully"
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid order list."
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/serverError'
+              example:
+                message: "Error updating order, please try again later."
     
   /buyer/deleteOrder/{orderId}:
     delete:
@@ -257,31 +373,31 @@ paths:
           description: "Buyer's order id"
           schema:
             type: number
-        - name: reason
-          in: query
-          description: "Reason for cancellation"
-          required: true
-          schema:
-            type: string
       responses:
         '200':
-          description: "Cancelled order sucessfully"
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/successfulRequest'
+              example: 
+                message: "Order deleted successfully"
         '400':
-          description: Bad request
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid Order Id."
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/serverError'  
+              example:
+                message: "Error deleting order, please try again later."
   
   /buyer/orderDetails/{orderId}:
     get:
@@ -299,23 +415,27 @@ paths:
             type: number
       responses:
         '200':
-          description: "Sucessfully retrieves order details"
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/orderDetails'
         '400':
-          description: Bad request 
+          description: Bad Request 
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid Order Id."
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/serverError'     
+                $ref: '#/components/schemas/serverError' 
+              example:
+                message: "Error retrieving order, please try again later."
   #redundant; change to buyer checkout
   /buyer/checkout/{orderId}: 
     post:
@@ -331,25 +451,211 @@ paths:
           description: "Buyer's order id"
           schema:
             type: number
-        # other checkout parameters
+        # other checkout body
       responses:
         '200':
-          description: "Checkout details submitted successfully"
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/successfulRequest'
+              example:
+                message: "Successfully Checked out."
         '400':
-          description: Bad request 
+          description: Bad Request 
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid orderId"
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/serverError'
+              example:
+                message: "Error checking out, please try again later."
              
-
+  /seller/users:
+    get:
+      tags:
+      - "Seller - Buyer"
+      summary: View all the users in the system.
+      description: Allows the seller to view all the users in the system.
+      operationId: users  
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userList'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+              example:
+                message: "Error retrieving users, please try again later."
+  
+  /seller/product:
+    get:
+      tags:
+      - "Seller - Buyer"
+      summary: View all the products in the system.
+      description: Allows the seller to view all the products in the system.
+      operationId: products  
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productList'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError'
+              example:
+                message: "Error retrieving products, please try again later."
+    
+  /seller/addProducts:
+    post:
+      tags:
+      - "Seller - Buyer"
+      summary: Add products to the system.
+      description: Adding products, including name, cost, and stock to the system.
+      operationId: addProducts 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updatedOrderList:
+                  type: array
+                  description: "List of products to add"
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: "Product name"
+                        example: "baby carrots"
+                      productCost:
+                        type: number
+                        description: "Cost of this product"
+                        example: 3
+                      stockRemaining:
+                        type: number
+                        description: "How much stock"
+                        example: 5
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/created'
+              example:
+                message: 'Products added successfully'
+        '400':
+          description: Bad Request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+              example:
+                message: "Invalid productsList"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError' 
+              example: 
+                message: 'Error adding products, please try again later.'
+      
+  /seller/orders/{orderId}:
+    get:
+      tags:
+        - "Seller - Buyer"
+      summary: "Get an order from a user"
+      description: "Retrieve an order from a user based on their orderId"
+      operationId: viewOrder
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: "Buyer's orderId."
+          schema:
+            type: integer   
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+              example:
+                message: "OrderId not found."
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError' 
+              example: 
+                message: 'Error fetching orders, please try again later.'
+    
+  /seller/orders/{customerId}:
+    get:
+      tags:
+        - "Seller - Buyer"
+      summary: "Get all orders from a user."
+      description: "Retrieve all orders from a user based on their customerId"
+      operationId: viewBuyerOrders
+      parameters:
+        - name: customerId
+          required: true
+          in: path
+          description: "Buyer's customerId."
+          schema:
+            type: integer   
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+              example:
+                message: "CustomerId not found."
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverError' 
+              example: 
+                message: 'Error fetching the orders, please try again later.'  
+      
+      
