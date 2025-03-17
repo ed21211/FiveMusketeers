@@ -1,0 +1,6 @@
+// https://github.com/stuyy/expressjs-full-course/tree/master
+{
+	"typeAcquisition": {
+		"include": ["jest"]
+	}
+}
