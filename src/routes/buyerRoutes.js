@@ -34,6 +34,31 @@ buyer.post("/createOrder", async (req, res) => {
 	res.json(result);
 });
 
+// BUYER UPDATES ORDER
+buyer.put("/updateOrder", async (req, res) => {
+	const {updatedOrdersList,  orderId } = req.body;
+	const result = await updateOrder(updatedOrdersList,  orderId);
+
+	if (result.code !== 201) {
+			throw HTTPError(result.code, result.message);
+	}
+
+	res.json(result);
+});
+
+
+// BUYER DELETES ORDER
+buyer.delete("/deleteOrder", async (req, res) => {
+	const {orderId } = req.body;
+	const result = await deleteOrder(orderId);
+
+	if (result.code !== 201) {
+			throw HTTPError(result.code, result.message);
+	}
+
+	res.json(result);
+});
+
 // BUYER SIGNS OUT (removes from database)
 
 buyer.delete("/signout", async (req, res) => {
