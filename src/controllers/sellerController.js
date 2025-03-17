@@ -79,3 +79,34 @@ export async function addProducts(products) {
     }
 }
 
+/**
+ * This will return the list of orders or one specific order depending on whether
+ * orderId is specified
+ * @param {number} orderId
+ * @returns
+ */
+export async function viewOrder(orderId) {
+    const client = await pool.connect();
+    try {
+        const result = await pool.query(
+            `SELECT * FROM orderDetails WHERE id = $1`, [orderId]);
+        if (result.rows.length === 0) {
+            return {
+                code: 400,
+                message: `Order with ID ${orderId} is not found.`
+            }
+        }
+
+        return {
+            code: 200,
+            message: result.rows[0]
+        };
+    }   catch (error) {
+        return {
+            code: 500,
+            message: 'Error fetching the orders.'
+        };
+    }   finally {
+        client.release();
+    }
+}
