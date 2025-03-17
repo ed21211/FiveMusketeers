@@ -188,7 +188,7 @@ paths:
                 $ref: '#/components/schemas/serverError'
                 
   /buyer/signout:
-    post:
+    put:
       tags:
         - "Buyer - Seller"
       summary: Buyer logout.
@@ -214,7 +214,7 @@ paths:
                 $ref: '#/components/schemas/successfulRequest'
               example:
                   message: "Sucessfully signed out."
-        '404':
+        '400':
           description: Bad Request
           content:
             application/json:
