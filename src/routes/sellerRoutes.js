@@ -40,6 +40,16 @@ seller.post("/addProducts", async (req, res) => {
     res.json(result);
 });
 
+seller.get("/orders/:orderId", async (req,res) => {
+    const result = await viewOrder(parseInt(req.params.orderId));
+
+    if(result.code !== 200) {
+        throw HTTPError(result.code, result.message);
+    }
+
+    res.json(result);
+});
+
 app.use(errorHandler());
 
 export default seller;
