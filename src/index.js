@@ -14,7 +14,10 @@ app.get("/", (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-	console.log("Server Running on PORT", PORT);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log("Server Running on PORT", PORT);
+    });
+}
 
+export default app;
